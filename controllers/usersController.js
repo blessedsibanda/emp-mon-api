@@ -59,13 +59,15 @@ const getUserToken = (req, res) => {
         message: err.message
       });
     }
-    const isMatch = bcrypt.compareSync(password, user.password);
-    if (isMatch) {
-      const payload = { id: user._id };
-      return res.json({
-        success: true,
-        token: jwt.sign(payload, config.JWT_SECRET)
-      });
+    if (user) {
+      const isMatch = bcrypt.compareSync(password, user.password);
+      if (isMatch) {
+        const payload = { id: user._id };
+        return res.json({
+          success: true,
+          token: jwt.sign(payload, config.JWT_SECRET)
+        });
+      }
     }
     return res.status(401).json({
       message: "Wrong login credentials",

@@ -2,6 +2,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config = require("../config/config");
+const Task = require("../models/Task");
 
 const getAllUsers = (req, res) => {
   User.find({}, "name jobTitle email", (err, users) => {
@@ -77,9 +78,18 @@ const getUserToken = (req, res) => {
 };
 
 const viewDashboard = (req, res) => {
-  return res.json({
-    status: "This is the Dashboard",
-    user: req.user
+  Task.find({ owner: req.user._id }, (err, tasks) => {
+    if (err) {
+      return res.status(500).json({
+        error: true,
+        message: err.message
+      });
+    }
+    return res.json({
+      status: "This is the Dashboard",
+      user: req.user,
+      tasks
+    });
   });
 };
 

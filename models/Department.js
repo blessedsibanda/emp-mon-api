@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { employeeSchema } = require("./Employee");
+const { empSchema } = require("./Employee");
 
 const dptSchema = mongoose.Schema(
   {
@@ -12,7 +12,7 @@ const dptSchema = mongoose.Schema(
       type: String,
       required: true
     },
-    employees: [employeeSchema]
+    employees: [empSchema]
   },
   { timestamps: true }
 );

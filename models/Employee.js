@@ -7,11 +7,6 @@ const empSchema = mongoose.Schema(
       ref: "User",
       required: true,
       unique: true
-    },
-    department: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Department",
-      required: true
     }
   },
   { timestamps: true }

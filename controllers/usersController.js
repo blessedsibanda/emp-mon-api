@@ -3,63 +3,62 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config = require("../config/config");
 const Task = require("../models/Task");
+const { Employee } = require("../models/Employee");
 
-const getAllUsers = (req, res) => {
-  User.find({}, "name jobTitle email", (err, users) => {
-    if (err) {
-      return res.status(500).json({
-        error: true,
-        message: err.message
-      });
-    }
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({}, "name jobTitle email");
     return res.json(users);
-  });
+  } catch (err) {
+    return res.status(500).json({
+      error: true,
+      message: err.message
+    });
+  }
 };
 
-const createUser = (req, res) => {
+const createUser = async (req, res) => {
   const { name, email, password, jobTitle, jobDesignation } = req.body;
-  let pwd_hash;
-  if (password) {
-    pwd_hash = bcrypt.hashSync(req.body.password, 10);
-  }
-  const newUser = new User({
-    name,
-    email,
-    password: pwd_hash,
-    jobTitle,
-    jobDesignation
-  });
-
-  newUser.save((err, user) => {
-    if (err) {
-      return res.status(400).json({
-        error: true,
-        message: err.message
-      });
+  try {
+    let pwd_hash;
+    if (password) {
+      pwd_hash = bcrypt.hashSync(req.body.password, 10);
     }
+    const newUser = await User.create({
+      name,
+      email,
+      password: pwd_hash,
+      jobTitle,
+      jobDesignation
+    });
+    // create associated employee account
+    await Employee.create({ user: newUser });
+
     newUser.password = undefined; // to avoid returning the password
     return res.status(201).json({
       message: "User created successfully!",
-      user
+      user: newUser
     });
-  });
+  } catch (err) {
+    return res.status(500).json({
+      error: true,
+      message: err.message
+    });
+  }
 };
 
-const getUserToken = (req, res) => {
+const getUserToken = async (req, res) => {
   const { email, password } = req.body;
+
   if (!email || !password) {
     return res.status(400).json({
       error: true,
       message: "Provide email address and password to login"
     });
   }
-  User.findOne({ email }, (err, user) => {
-    if (err) {
-      return res.status(500).json({
-        error: true,
-        message: err.message
-      });
-    }
+
+  try {
+    const user = await User.findOne({ email });
     if (user) {
       const isMatch = bcrypt.compareSync(password, user.password);
       if (isMatch) {
@@ -74,23 +73,28 @@ const getUserToken = (req, res) => {
       message: "Wrong login credentials",
       success: false
     });
-  });
+  } catch (err) {
+    return res.status(500).json({
+      error: true,
+      message: err.message
+    });
+  }
 };
 
-const viewDashboard = (req, res) => {
-  Task.find({ owner: req.user._id }, (err, tasks) => {
-    if (err) {
-      return res.status(500).json({
-        error: true,
-        message: err.message
-      });
-    }
+const viewDashboard = async (req, res) => {
+  try {
+    const tasks = await Task.find({ owner: req.user._id });
     return res.json({
       status: "This is the Dashboard",
       user: req.user,
       tasks
     });
-  });
+  } catch (err) {
+    return res.status(500).json({
+      error: true,
+      message: err.message
+    });
+  }
 };
 
 module.exports = {

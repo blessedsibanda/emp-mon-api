@@ -14,14 +14,6 @@ const userSchema = mongoose.Schema(
     password: {
       type: String,
       required: true
-    },
-    jobTitle: {
-      type: String,
-      required: true
-    },
-    jobDesignation: {
-      type: String,
-      required: true
     }
   },
   { timestamps: true }

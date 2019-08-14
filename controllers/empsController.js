@@ -1,11 +1,33 @@
-const { Employee } = require("../models/Employee");
-const User = require("../models/User");
+const Employee = require("../models/Employee");
+const Department = require("../models/Department");
 
 const createEmployee = async (req, res) => {
   try {
-    const { userId } = req.body;
-    const user = await User.findById(userId);
-    const emp = await Employee.create({ user });
+    const {
+      dptId,
+      isManager,
+      jobTitle,
+      designationNumber,
+      firstName,
+      middleName,
+      lastName
+    } = req.body;
+    const dpt = await Department.findById(dptId);
+    if (!dpt) {
+      return res.status(400).json({
+        error: true,
+        message: "The department id is required"
+      });
+    }
+    const emp = await Employee.create({
+      isManager,
+      jobTitle,
+      designationNumber,
+      department: dpt._id,
+      firstName,
+      middleName,
+      lastName
+    });
     return res.status(201).json({
       message: "Employee create successfully",
       employee: emp
@@ -20,12 +42,7 @@ const createEmployee = async (req, res) => {
 
 const getAllEmployees = async (req, res) => {
   try {
-    const employeesIds = await Employee.find({}, "user");
-    const employees = [];
-    const rslt = employeesIds.forEach(async id => {
-      let user = await User.findById(id);
-      employees.push(user);
-    });
+    const employees = await Employee.find({});
     return res.json(employees);
   } catch (err) {
     return res.status(500).json({

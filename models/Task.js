@@ -17,6 +17,7 @@ const taskSchema = mongoose.Schema(
       type: Date
       // required: true
     },
+    // place the employee will be working from
     place: {
       type: String,
       required: true

@@ -2,19 +2,42 @@ const mongoose = require("mongoose");
 
 const empSchema = mongoose.Schema(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+    isManager: {
+      type: Boolean,
+      default: false
+    },
+    // isActive -- whether the employee has registered their account
+    isActive: {
+      type: Boolean,
+      default: false
+    },
+    jobTitle: {
+      type: String,
+      required: true
+    },
+    designationNumber: {
+      type: Number,
       required: true,
       unique: true
+    },
+    department: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Department",
+      required: true
+    },
+    firstName: {
+      type: String,
+      required: true
+    },
+    middleName: {
+      type: String
+    },
+    lastName: {
+      type: String,
+      required: true
     }
   },
   { timestamps: true }
 );
 
-const Employee = mongoose.model("Employee", empSchema);
-
-module.exports = {
-  Employee,
-  empSchema
-};
+module.exports = mongoose.model("Employee", empSchema);

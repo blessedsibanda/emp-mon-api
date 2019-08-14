@@ -5,6 +5,6 @@ const dptCtrl = require("../controllers/dptsController");
 
 router.get("/", dptCtrl.getAllDepartments);
 router.post("/", dptCtrl.createDepartment);
-router.put("/:dptId", dptCtrl.addEmployeeToDepartment);
+// router.put("/:dptId", dptCtrl.addEmployeeToDepartment);
 
 module.exports = router;

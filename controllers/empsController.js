@@ -4,7 +4,7 @@ const Department = require("../models/Department");
 const createEmployee = async (req, res) => {
   try {
     const {
-      dptId,
+      department,
       isManager,
       jobTitle,
       designationNumber,
@@ -12,18 +12,18 @@ const createEmployee = async (req, res) => {
       middleName,
       lastName
     } = req.body;
-    const dpt = await Department.findById(dptId);
+    const dpt = await Department.findOne({ name: department });
     if (!dpt) {
       return res.status(400).json({
         error: true,
-        message: "The department id is required"
+        message: "Provide a valid department name"
       });
     }
     const emp = await Employee.create({
       isManager,
       jobTitle,
       designationNumber,
-      department: dpt._id,
+      department,
       firstName,
       middleName,
       lastName

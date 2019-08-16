@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Department = require("./Department");
 
 const empSchema = mongoose.Schema(
   {
@@ -21,8 +22,7 @@ const empSchema = mongoose.Schema(
       unique: true
     },
     department: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Department",
+      type: String,
       required: true
     },
     firstName: {
@@ -39,5 +39,10 @@ const empSchema = mongoose.Schema(
   },
   { timestamps: true }
 );
+
+empSchema.virtual("departmentName").get(async function() {
+  const dpt = await Department.findById(this.department);
+  return dpt;
+});
 
 module.exports = mongoose.model("Employee", empSchema);
